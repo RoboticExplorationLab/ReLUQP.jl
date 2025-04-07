@@ -114,16 +114,16 @@ function (m::SolverIterationLayer)(in)
     return nothing;
 end
 
+using GPUArrays: @kernel, @index, get_backend
 """
 Elementwise in-place clamp for GPU arrays
 """
 function Base.clamp!(A::AnyGPUArray, l::AnyGPUArray, u::AnyGPUArray)
-    gpu_call(A, l, u) do ctx, A, l, u
-        I = @cartesianidx A
+    @kernel function clamp_kernel!(A, l, u)
+        I = @index(Global, Cartesian)
         A[I] = clamp(A[I], l[I], u[I])
-        return
     end
-
+    clamp_kernel!(get_backend(A))(A, l, u; ndrange = size(A))
     return A
 end
 

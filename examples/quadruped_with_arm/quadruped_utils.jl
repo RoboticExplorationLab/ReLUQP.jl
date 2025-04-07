@@ -113,7 +113,7 @@ function visualize!(model::ArmGo1, mvis::MechanismVisualizer, q)
 end
 
 function animate!(model::ArmGo1, mvis::MechanismVisualizer, qs; Δt=0.001)
-    anim = MeshCat.Animation(convert(Int, floor(1.0 / Δt)))
+    anim = MeshCat.Animation(mvis.visualizer; fps=convert(Int, floor(1.0 / Δt)))
     for (t, q) in enumerate(qs)
         MeshCat.atframe(anim, t) do 
             set_configuration!(mvis, q[1:model.nq])
